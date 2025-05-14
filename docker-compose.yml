@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  bot:
+    networks:
+      - bot_net
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./.env:/app/.env:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app/src
+    depends_on:
+      - redis
+      - bot_db
+    restart: unless-stopped
+
+  redis:
+    container_name: bot_redis
+    image: redis/redis-stack:latest
+    env_file:
+      - ./.env
+    ports:
+      - ${REDIS_PORT_EXTERNAL}:${REDIS_PORT}
+      - ${REDIS_UI_PORT_EXTERNAL}:${REDIS_UI_PORT}
+    networks:
+      - bot_net
+
+  bot_db:
+    container_name: bot_db
+    networks:
+      - bot_net
+    image: postgres:14-alpine
+    volumes:
+      - ./db/data:/var/lib/postgresql/data
+    env_file:
+      - ./.env
+    ports:
+      - ${POSTGRES_PORT_EXTERNAL}:${POSTGRES_PORT}
+
+networks:
+  bot_net:
