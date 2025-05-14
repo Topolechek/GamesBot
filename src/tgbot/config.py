@@ -12,8 +12,11 @@ class RedisConfig:
     host: str
     port: int
     db: int
+    password: str | None = None
 
     def dsn(self) -> str:
+        if self.password:
+            return f"redis://:{self.password}@{self.host}:{self.port}/{self.db}"
         return f"redis://{self.host}:{self.port}/{self.db}"
 
 @dataclass
@@ -25,7 +28,7 @@ class PostgresConfig:
     database: str
 
     def dsn(self) -> str:
-        return f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
+        return f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
 
 @dataclass
 class TgBot:
@@ -65,6 +68,7 @@ def load_config(path: str | Path = ".env") -> Config:
             RedisConfig(
                 host=os.getenv("REDIS_HOST"),
                 port=int(os.getenv("REDIS_PORT")),
+                password=os.getenv("REDIS_PASSWORD"),
                 db=int(os.getenv("REDIS_DB")),
             )
             if use_redis
