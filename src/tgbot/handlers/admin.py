@@ -10,7 +10,7 @@ router = Router()
 async def admin_command(message: Message):
     await message.answer("This is an admin-only command!")
 
-@router.message(AdminFilter(is_admin=True), Command(commands=["start"]))
+@router.message(AdminFilter(is_admin=True), Command(commands=["start_admin"]))
 async def cmd_start(message: Message):
     try:
         await message.answer("Welcome admin")
