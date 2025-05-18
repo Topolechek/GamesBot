@@ -2,6 +2,8 @@ version: "3.8"
 
 services:
   bot:
+    env_file:
+      - .env
     networks:
       - bot_net
     build:
@@ -9,6 +11,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./.env:/app/.env:ro
+      - ./src:/app/src
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONPATH=/app/src

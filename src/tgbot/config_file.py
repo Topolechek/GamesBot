@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
-import os
 import logging
-from dotenv import load_dotenv
+from tgbot.config.secrets import ENV
 
 logger = logging.getLogger(__name__)
 
@@ -44,13 +43,12 @@ class Config:
     postgres: Optional[PostgresConfig] = None
 
 def load_config(path: str | Path = ".env") -> Config:
-    load_dotenv(path)
     logger.info(f"Loaded .env from {path}")
 
-    bot_token = os.getenv("BOT_TOKEN")
-    admin_ids = os.getenv("ADMIN_IDS")
-    use_redis = os.getenv("USE_REDIS", "false").lower() == "true"
-    steam_api_key = os.getenv("STEAM_API_KEY", "")
+    bot_token = ENV.get("BOT_TOKEN")
+    admin_ids = ENV.get("ADMIN_IDS")
+    use_redis = ENV.get("USE_REDIS", "false").lower() == "true"
+    steam_api_key = ENV.get("STEAM_API_KEY", "")
 
     if not bot_token:
         raise ValueError("BOT_TOKEN is not set in .env")
@@ -66,19 +64,19 @@ def load_config(path: str | Path = ".env") -> Config:
         ),
         redis=(
             RedisConfig(
-                host=os.getenv("REDIS_HOST"),
-                port=int(os.getenv("REDIS_PORT")),
-                password=os.getenv("REDIS_PASSWORD"),
-                db=int(os.getenv("REDIS_DB")),
+                host=ENV.get("REDIS_HOST"),
+                port=int(ENV.get("REDIS_PORT")),
+                password=ENV.get("REDIS_PASSWORD"),
+                db=int(ENV.get("REDIS_DB")),
             )
             if use_redis
             else None
         ),
         postgres=PostgresConfig(
-            user=os.getenv("POSTGRES_USER"),
-            password=os.getenv("POSTGRES_PASSWORD"),
-            host=os.getenv("POSTGRES_HOST"),
-            port=int(os.getenv("POSTGRES_PORT")),
-            database=os.getenv("POSTGRES_DATABASE"),
+            user=ENV.get("POSTGRES_USER"),
+            password=ENV.get("POSTGRES_PASSWORD"),
+            host=ENV.get("POSTGRES_HOST"),
+            port=int(ENV.get("POSTGRES_PORT")),
+            database=ENV.get("POSTGRES_DATABASE"),
         ),
     )

@@ -5,3 +5,4 @@ redis==5.0.8
 asyncpg==0.29.0
 SQLAlchemy==2.0.0
 sqlalchemy-repr==0.0.2
+alembic>=1.8
