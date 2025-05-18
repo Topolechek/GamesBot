@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, Router
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.client.default import DefaultBotProperties
@@ -29,15 +29,15 @@ async def main():
     bot = Bot(token=config.tg_bot.token, default=DefaultBotProperties(parse_mode="HTML"))
     dp = Dispatcher(storage=storage)
 
-    # Регистрируем middleware
-    dp.message.middleware(RoleMiddleware(admin_ids=config.tg_bot.admin_ids))
-    dp.message.middleware(DbSessionMiddleware())
-    dp.message.middleware(ThrottlingMiddleware())
+    main_router = Router()
+    main_router.message.middleware(RoleMiddleware(admin_ids=config.tg_bot.admin_ids))
+    main_router.message.middleware(DbSessionMiddleware())
+    main_router.message.middleware(ThrottlingMiddleware())
+    main_router.include_router(admin_router)
+    main_router.include_router(error_router)
+    main_router.include_router(user_router)
 
-    # Регистрируем роуты
-    dp.include_router(admin_router)
-    dp.include_router(error_router)
-    dp.include_router(user_router)
+    dp.include_router(main_router)
 
     try:
         await dp.start_polling(bot)

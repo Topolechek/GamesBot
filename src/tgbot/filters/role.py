@@ -46,10 +46,10 @@ class AdminFilter(BaseFilter):
 
         role = data.get("role")
         if role is None:
-            logger.warning("Role not found in context data: %s", data)
+            logger.warning("Role not found in context data: %s")
             return False
 
-        is_admin_user = (role is UserRole.ADMIN)
+        is_admin_user = (role == UserRole.ADMIN)
         result = (is_admin_user == self.is_admin)
         logger.debug(f"Admin check: user_role={role}, is_admin={self.is_admin}, result={result}")
         return result
